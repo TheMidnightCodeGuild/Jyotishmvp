@@ -14,14 +14,24 @@ import {
   View,
 } from "react-native";
 
+// Firestore imports
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
+import { db } from "../firebaseConfig";
+
 const { height: screenHeight } = Dimensions.get("window");
 
 export default function LoginScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
 
-  const [mobileNumber, setMobileNumber] = useState("");
-  const [password, setPassword] = useState("");
+  // Both mobileNumber and password are strings
+  const [mobileNumber, setMobileNumber] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
@@ -37,11 +47,41 @@ export default function LoginScreen() {
 
     setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const usersRef = collection(db, "user");
+      // Both mobileNumber and password are strings in Firestore
+      const q = query(
+        usersRef,
+        where("mobile", "==", mobileNumber),
+        where("password", "==", password)
+      );
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        // User found, allow access
+        setIsLoading(false);
+        router.replace("/auth/onboarding");
+      } else {
+        setIsLoading(false);
+        Alert.alert("Login Failed", "Invalid mobile number or password");
+      }
+    } catch (error) {
       setIsLoading(false);
-      router.replace("/auth/onboarding");
-    }, 2000);
+      console.error("Login error:", error);
+
+      // More specific error messages based on the error type
+      if (error instanceof Error) {
+        if (error.message.includes("permission-denied")) {
+          Alert.alert("Error", "You don't have permission to access this data. Please contact support.");
+        } else if (error.message.includes("network")) {
+          Alert.alert("Network Error", "Please check your internet connection and try again.");
+        } else {
+          Alert.alert("Error", `Login failed: ${error.message}`);
+        }
+      } else {
+        Alert.alert("Error", "An unexpected error occurred while logging in. Please try again.");
+      }
+    }
   };
 
   return (
@@ -167,7 +207,7 @@ export default function LoginScreen() {
                     shadowRadius: 12,
                   }}
                 >
-                  <Text className="text-white bg-black p-4 rounded-2xl font-bold text-lg tracking-wide">
+                  <Text className="text-white mt-4 rounded-2xl font-bold text-lg tracking-wide">
                     {isLoading ? "Signing In..." : "Sign In"}
                   </Text>
                 </TouchableOpacity>
@@ -183,14 +223,7 @@ export default function LoginScreen() {
           </View>
 
           {/* Footer */}
-          <View className="mt-8 items-center">
-            <Text className="text-gray-500 dark:text-gray-400 text-sm">
-              Don&apos;t have an account?{" "}
-              <Text className="text-blue-600 dark:text-blue-400 font-medium">
-                Sign Up
-              </Text>
-            </Text>
-          </View>
+          
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

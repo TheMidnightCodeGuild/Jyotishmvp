@@ -1,5 +1,6 @@
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -9,8 +10,15 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
+
+function formatDate(date: Date) {
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
 
 export default function OnboardingScreen() {
   const colorScheme = useColorScheme();
@@ -20,6 +28,10 @@ export default function OnboardingScreen() {
   const [gender, setGender] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Date picker state
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [date, setDate] = useState<Date | undefined>(undefined);
 
   const handleContinue = async () => {
     if (!name.trim() || !gender || !dateOfBirth.trim()) {
@@ -48,6 +60,14 @@ export default function OnboardingScreen() {
 
   const selectGender = (selectedGender: string) => {
     setGender(selectedGender);
+  };
+
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    setShowDatePicker(Platform.OS === "ios"); // On Android, always hide after selection
+    if (selectedDate) {
+      setDate(selectedDate);
+      setDateOfBirth(formatDate(selectedDate));
+    }
   };
 
   return (
@@ -153,22 +173,38 @@ export default function OnboardingScreen() {
             <Text className="text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">
               Date of Birth
             </Text>
-            <TextInput
-              className="w-full h-12 px-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              placeholder="DD/MM/YYYY"
-              placeholderTextColor={
-                colorScheme === "dark" ? "#9CA3AF" : "#6B7280"
-              }
-              value={dateOfBirth}
-              onChangeText={setDateOfBirth}
-              keyboardType={
-                Platform.OS === "ios" ? "numbers-and-punctuation" : "numeric"
-              }
-              maxLength={10}
-            />
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => setShowDatePicker(true)}
+            >
+              <View
+                pointerEvents="none"
+                className="w-full h-12 px-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 flex-row items-center"
+              >
+                <Text
+                  className={`text-base ${
+                    dateOfBirth
+                      ? "text-gray-900 dark:text-white"
+                      : "text-gray-400 dark:text-gray-500"
+                  }`}
+                >
+                  {dateOfBirth ? dateOfBirth : "DD/MM/YYYY"}
+                </Text>
+              </View>
+            </TouchableOpacity>
             <Text className="text-gray-500 dark:text-gray-400 text-xs mt-1">
               Format: DD/MM/YYYY (e.g., 15/03/1990)
             </Text>
+            {showDatePicker && (
+              <DateTimePicker
+                value={date ? date : new Date(2000, 0, 1)}
+                mode="date"
+                display={Platform.OS === "ios" ? "spinner" : "default"}
+                onChange={handleDateChange}
+                maximumDate={new Date()}
+                // minimumDate={new Date(1900, 0, 1)}
+              />
+            )}
           </View>
 
           {/* Continue Button */}

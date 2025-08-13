@@ -1,100 +1,103 @@
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import React from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
-export default function HomeScreen() {
+export default function NameScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
 
   return (
     <ScrollView className="flex-1 bg-white dark:bg-gray-900">
       <View className="px-6 py-8">
-        {/* Header */}
         <View className="mb-8">
           <Text className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
-            Welcome to Jyotish
+            Name Analysis
           </Text>
           <Text className="text-gray-600 dark:text-gray-300">
-            Discover your cosmic journey
+            Discover the hidden meaning of names
           </Text>
         </View>
 
-        {/* Quick Actions */}
         <View className="mb-8">
           <Text className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
-            Quick Actions
+            Enter Name
+          </Text>
+          <TextInput
+            className="w-full h-12 px-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white mb-4"
+            placeholder="Enter full name"
+            placeholderTextColor={
+              colorScheme === "dark" ? "#9CA3AF" : "#6B7280"
+            }
+          />
+          <TouchableOpacity className="bg-blue-500 p-4 rounded-lg">
+            <Text className="text-white font-semibold text-center">
+              Analyze Name
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View className="mb-8">
+          <Text className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+            Name Analysis Types
           </Text>
           <View className="space-y-4">
-            <TouchableOpacity className="bg-blue-500 p-4 rounded-lg">
-              <Text className="text-white font-semibold text-lg">
-                Daily Horoscope
-              </Text>
-              <Text className="text-blue-100 text-sm">
-                Check today&apos;s predictions
-              </Text>
-            </TouchableOpacity>
-
             <TouchableOpacity className="bg-purple-500 p-4 rounded-lg">
               <Text className="text-white font-semibold text-lg">
-                Birth Chart
+                Numerology
               </Text>
               <Text className="text-purple-100 text-sm">
-                Generate your natal chart
+                Numerical value and meaning
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity className="bg-green-500 p-4 rounded-lg">
               <Text className="text-white font-semibold text-lg">
-                Compatibility
+                Astrological
               </Text>
               <Text className="text-green-100 text-sm">
-                Check relationship compatibility
+                Name based on birth chart
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity className="bg-orange-500 p-4 rounded-lg">
+              <Text className="text-white font-semibold text-lg">
+                Personality
+              </Text>
+              <Text className="text-orange-100 text-sm">
+                Character traits analysis
               </Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Recent Activity */}
         <View className="mb-8">
           <Text className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
-            Recent Activity
+            Recent Analysis
           </Text>
           <View className="space-y-3">
             <View className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
               <Text className="text-gray-800 dark:text-white font-medium">
-                Daily Horoscope Viewed
+                John Doe
               </Text>
               <Text className="text-gray-600 dark:text-gray-300 text-sm">
-                2 hours ago
+                Numerology: 7 - Spiritual
               </Text>
             </View>
             <View className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
               <Text className="text-gray-800 dark:text-white font-medium">
-                Birth Chart Generated
+                Jane Smith
               </Text>
               <Text className="text-gray-600 dark:text-gray-300 text-sm">
-                Yesterday
+                Numerology: 3 - Creative
               </Text>
             </View>
-          </View>
-        </View>
-
-        {/* Featured Content */}
-        <View>
-          <Text className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
-            Featured
-          </Text>
-          <View className="bg-gradient-to-r from-orange-400 to-red-500 p-6 rounded-lg">
-            <Text className="text-white font-bold text-xl mb-2">
-              Weekly Forecast
-            </Text>
-            <Text className="text-orange-100 mb-4">
-              Discover what the stars have in store for you this week
-            </Text>
-            <TouchableOpacity className="bg-white/20 p-3 rounded-lg self-start">
-              <Text className="text-white font-medium">Read More</Text>
-            </TouchableOpacity>
           </View>
         </View>
       </View>
